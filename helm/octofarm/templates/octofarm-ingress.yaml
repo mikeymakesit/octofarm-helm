@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.octofarm.ingress.name | lower | quote }}
+  labels:
+    app.kubernetes.io/name: octofarm
+spec:
+  rules:
+    - host: {{ .Values.octofarm.ingress.hostName | lower | quote }}
+      http:
+        paths:
+          - path: /
+            backend:
+              service:
+                name: octofarm
+                port:
+                  name: {{ .Values.octofarm.service.portName }}
+            pathType: Prefix
+

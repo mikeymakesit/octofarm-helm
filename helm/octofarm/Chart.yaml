@@ -1,0 +1,17 @@
+apiVersion: v2
+name: octofarm
+version: "1.0.0"
+appVersion: "1.7.3"
+description: "Deploy OctoFarm and MongoDB to manage multiple instances of OctoPrint."
+type: application
+keywords:
+  - octofarm
+  - octoprint
+  - print farm
+  - 3d printing
+home: https://github.com/mikeymakesit/octofarm-helm
+icon: https://github.com/mikeymakesit/octofarm-helm/master/img/octofarm.png
+maintainers:
+  - name: Mike Hornung
+    email: mike@qed.fyi
+

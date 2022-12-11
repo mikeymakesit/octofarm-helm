@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: octofarm
+  labels:
+    app.kubernetes.io/name: octofarm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: octofarm
+  serviceName: octofarm
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: octofarm
+    spec:
+      {{- $basedir := .Values.octofarm.appBaseDir }}
+      {{- $mongobasedir := .Values.mongodb.appBaseDir }}
+      {{- $uid := .Values.octofarm.appUserUid }}
+      {{- $gid := .Values.octofarm.appUserGid }}
+      {{- $mongover := .Values.mongodb.appVersion }}
+      serviceAccountName: octofarm
+      automountServiceAccountToken: false
+      initContainers:
+        - name: volume-setup
+          image: busybox:latest
+          command: [ "/bin/sh" ]
+          args:
+            - "-c"
+            - "cd {{ $basedir }}"
+            - "&&"
+            - "mkdir -p logs scripts images"
+            - "&&"
+            - "chown -R {{ $uid }}:{{ $gid }} ."
+          volumeMounts:
+            - name: octofarm
+              mountPath: {{ $basedir }}
+
+      containers:
+        - name: mongo
+          image: mongo:{{ $mongover }}
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: {{ .Values.mongodb.configSecretName | quote }}
+          volumeMounts:
+            - mountPath: {{ $mongobasedir }}/db
+              name: mongo
+          livenessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+              - mongo
+              - --eval
+              - db.adminCommand('ping')
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+
+        - name: octofarm
+          image: {{ .Values.octofarm.image }}
+          imagePullPolicy: Always
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: {{ .Values.octofarm.appUserUid }}
+            runAsGroup: {{ .Values.octofarm.appUserGid }}
+          # Uncomment the below if the container crashes and you want to keep it running to explore
+          # the running pod.
+          #command: [ "sleep", "infinity" ]
+          ports:
+            - name: {{ .Values.octofarm.service.portName }}
+              containerPort: {{ .Values.octofarm.service.port }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.octofarm.configSecretName | quote }}
+          volumeMounts:
+            - mountPath: {{ $basedir }}/logs
+              name: octofarm
+              subPath: logs
+            - mountPath: {{ $basedir }}/scripts
+              name: octofarm
+              subPath: scripts
+            - mountPath: {{ $basedir }}/images
+              name: octofarm
+              subPath: images
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.mongodb.storageSize | quote }}
+        storageClassName: {{ .Values.mongodb.storageClass | quote }}
+    - metadata:
+        name: octofarm
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.octofarm.storageSize | quote }}
+        storageClassName: {{ .Values.octofarm.storageClass | quote }}
+

@@ -1,0 +1,66 @@
+mongodb:
+  # Version of MongoDB to use
+  # Versions after 4.4.6 require CPUs with AVX support
+  # Since I run on Intel Celeron I version lock to 4.4.6
+  # Your mileage may vary
+  appVersion: "4.4.6"
+
+  # Where in the container to mount our PV containing the DB
+  appBaseDir: /data
+
+  # This is the minimum required configuration for OctoFarm's use of MongoDB
+  # Absolutely 100% change these to custom values in your deployment
+  config:
+    rootUser: root
+    rootPassword: replaceme
+    octofarmDbName: octofarm
+
+  # The MongoDB configuration will be stored in the following secret name
+  # and used as a volume mount by the mongo container
+  configSecretName: mongo-config
+
+  # Storage to allocate for MongoDB in a persistentVolumeClaim
+  storageSize: "5Gi"
+
+
+octofarm:
+  # Which image to use
+  image: octofarm/octofarm:latest
+
+  # The UID of the app user
+  # This is used by a startup container to set filesystem permissions
+  # on the PV
+  appUserUid: 1000
+  appUserGid: 1000
+
+  timeZone: America/Los_Angeles
+
+  # Base directory in the container where the app runs
+  # This is used throughout the templates to set filesystem locations
+  appBaseDir: /app
+
+  # Configuration data that will be passed as environment variables to OctoFarm
+  # via a volume mount with the name specified below
+  config:
+    listenPort: "4000"
+
+  # Name of the secret in which to store OctoFarm config
+  # This secret will be a volume mount on the octofarm container
+  configSecretName: octofarm-config
+
+  # Storage to allocate for OctoFarm in a persistentVolumeClaim
+  storageSize: "5Gi"
+  storageClass: local-path
+
+  # Name and number of the port OctoFarm will listen on
+  service:
+    portName: http
+    port: 4000
+
+  ingress:
+    # Name of ingress resource
+    name: octofarm
+
+    # Hostname for which the ingress controller will send requests to OctoFarm
+    hostName: octofarm.local
+  
