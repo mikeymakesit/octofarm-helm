@@ -1,7 +1,7 @@
 # OctoFarm on Kubernetes
 
-This project offers a Helm chart to install OctoFarm
-on your Kubernetes cluster.
+This project offers a Helm chart to install
+[OctoFarm](https://github.com/OctoFarm/OctoFarm) on your Kubernetes cluster.
 
 ## Quick start
 
