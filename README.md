@@ -1,7 +1,7 @@
 # OctoFarm on Kubernetes
 
-This project offers a Helm chart to install
-[OctoFarm](https://github.com/OctoFarm/OctoFarm) on your Kubernetes cluster.
+Install [OctoFarm](https://github.com/OctoFarm/OctoFarm) on your Kubernetes
+cluster with this handy dandy Helm chart.
 
 ## Quick start
 
@@ -13,15 +13,19 @@ helm upgrade --install \
 
 ## Build a custom Docker image
 
-If you want to roll a test image, download the source code and
-run the following to build the image and push it to Docker Hub:
+To roll a test OctoFarm image, download the OctoFarm source code and
+run something like the following to build an image and push it to your repo:
 
 ```bash
-docker build -t dockerbrony/octofarm:1.8.0-beta.3 .
-docker push dockerbrony/octofarm:1.8.0-beta.3
+git clone https://github.com/OctoFarm/OctoFarm.git
+cd OctoFarm
+git checkout tags/v1.8.0-beta.3 -b betas/beta-1.8.0
+docker build -t myrepo/octofarm:1.8.0-beta.3 .
+docker push myrepo/octofarm:1.8.0-beta.3
+cd /path/to/this_project/helm
 helm upgrade --install \
   --namespace octofarm \
-  --set octofarm.image=dockerbrony/octofarm:1.8.0-beta.3 octofarm
+  --set octofarm.image=myrepo/octofarm:1.8.0-beta.3 octofarm
 ```
 
 ## Further reading
