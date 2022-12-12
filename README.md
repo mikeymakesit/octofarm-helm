@@ -26,5 +26,7 @@ helm upgrade --install \
 
 ## Further reading
 
-See helm/octofarm/README.md for more info.
+See [the Helm chart's README](helm/octofarm/README.md) for more info.
+
+<https://github.com/OctoFarm/OctoFarm>
 
