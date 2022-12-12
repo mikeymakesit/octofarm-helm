@@ -1,19 +1,11 @@
 # OctoFarm
 
-This Helm chart installs the latest OctoFarm and a required MongoDB instance
-as a StatefulSet.
+Install the latest OctoFarm with MongoDB in a StatefulSet.
 
 ## Install
 
-Example of installing the chart with default values:
-
-```bash
-helm install --namespace octofarm --create-namespace octofarm octofarm/
-```
-
-Here's how you're more likely to install the chart, providing
-overrides for key chart values.  I *HIGHLY* recommend setting
-custom database username and password, like so:
+Install the chart, providing overrides for key chart values.
+I *HIGHLY* recommend setting custom database credentials.
 
 ```bash
 helm install \
@@ -26,15 +18,15 @@ helm install \
 
 ## Uninstall
 
-Helm charts are so easy to remove:
+So easy to remove:
 
 ```bash
 helm uninstall octofarm
 ```
 
-**NOTE** that since it deploys as a StatefulSet the PersistentVolumeClaims
-will not be deleted when you uninstall the Helm chart.  This is a feature!
-If you want to delete the volumes as well, it's easiest to just delete
+**NOTE** since it deploys as a StatefulSet the PersistentVolumeClaims
+will *not* be deleted when you uninstall the Helm chart.  **This is
+a feature**!  If you want to delete the volumes as well, just delete
 the whole namespace:
 
 ```bash
